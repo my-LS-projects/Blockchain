@@ -31,13 +31,19 @@ class Blockchain(object):
         """
 
         block = {
-            # TODO
+            "index": len(self.chain) + 1,
+            "timestamp": time(),
+            "transactions": self.current_transactions,
+            "proof": proof,
+            "previous_hash": previous_hash or self.hash(self.last_block),
         }
 
         # Reset the current list of transactions
-        # Append the chain to the block
+        current_transactions = []
+        # Append the block to the chain
+        self.chain.append(block)
         # Return the new block
-        pass
+        return block
 
     def hash(self, block):
         """
@@ -56,8 +62,10 @@ class Blockchain(object):
         # or we'll have inconsistent hashes
 
         # TODO: Create the block_string
+        string_block = json.dumps(block, sort_keys=True)
 
         # TODO: Hash this string using sha256
+        raw_hash = hashlib.sha256(string_block.encode())
 
         # By itself, the sha256 function returns the hash in a raw string
         # that will likely include escaped characters.
@@ -66,7 +74,8 @@ class Blockchain(object):
         # easier to work with and understand
 
         # TODO: Return the hashed block string in hexadecimal format
-        pass
+        hex_hash = raw_hash.hexdigest()
+        return hex_hash
 
     @property
     def last_block(self):
@@ -105,13 +114,13 @@ class Blockchain(object):
 app = Flask(__name__)
 
 # Generate a globally unique address for this node
-node_identifier = str(uuid4()).replace('-', '')
+node_identifier = str(uuid4()).replace("-", "")
 
 # Instantiate the Blockchain
 blockchain = Blockchain()
 
 
-@app.route('/mine', methods=['GET'])
+@app.route("/mine", methods=["GET"])
 def mine():
     # Run the proof of work algorithm to get the next proof
 
@@ -124,14 +133,12 @@ def mine():
     return jsonify(response), 200
 
 
-@app.route('/chain', methods=['GET'])
+@app.route("/chain", methods=["GET"])
 def full_chain():
-    response = {
-        # TODO: Return the chain and its current length
-    }
+    response = {message: "hello"}
     return jsonify(response), 200
 
 
 # Run the program on port 5000
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
